@@ -1,4 +1,5 @@
 # gofn
+![Coverage](https://img.shields.io/badge/Coverage-84.4%25-brightgreen)
 library to use golang functional
 
 [![Go](https://github.com/devalexandre/gofn/actions/workflows/go.yml/badge.svg)](https://github.com/devalexandre/gofn/actions/workflows/go.yml)
