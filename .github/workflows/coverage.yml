@@ -1,26 +1,49 @@
-name: Generate code coverage badge
-
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+    paths-ignore:
+      - "**/*.md"
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Update coverage badge
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.14.0'
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.18
+      - name: Setup GO environment
+        run: |
+          go mod download
+          go get -u golang.org/x/lint/golint
+          go get -t .
 
-    - name: Test
-      run: go test -v ./...
-
-    - name: Update coverage report
-      uses: ncruces/go-coverage-report@main
-      continue-on-error: true
+      - name: Lint
+        run: |
+          golint -set_exit_status ./...
+      - name: Vet
+        run: |
+          go vet ./...
+      - name: Unit tests
+        run: |
+          sudo go test ./... -coverprofile coverage.out -covermode count
+          sudo go tool cover -func coverage.out
+      - name: Quality Gate - Test coverage shall be above threshold
+        env:
+          TESTCOVERAGE_THRESHOLD: 0
+        run: |
+          echo "Quality Gate: checking test coverage is above threshold ..."
+          echo "Threshold             : $TESTCOVERAGE_THRESHOLD %"
+          totalCoverage=`go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+          echo "Current test coverage : $totalCoverage %"
+          if (( $(echo "$totalCoverage $TESTCOVERAGE_THRESHOLD" | awk '{print ($1 > $2)}') )); then
+              echo "OK"
+          else
+              echo "Current test coverage is below threshold. Please add more unit tests or adjust threshold to a lower value."
+              echo "Failed"
+              exit 1
+          fi
+      - name: Build
+        run: go build -o myapp
