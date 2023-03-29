@@ -72,4 +72,45 @@ func TestArray(t *testing.T) {
 		}
 	})
 
+	t.Run("test Length", func(t *testing.T) {
+		a := []int{1, 2, 3, 4, 5}
+		b := array.NewArray(a).Length()
+		if b != 5 {
+			t.Error("Length failed. Got", b, "Expected", 5)
+		}
+	})
+
+	t.Run("test Reverse", func(t *testing.T) {
+		a := []int{1, 2, 3, 4, 5}
+		b := array.NewArray(a).Reverse().Value()
+		if !reflect.DeepEqual(b, []int{5, 4, 3, 2, 1}) {
+			t.Error("Reverse failed. Got", b, "Expected", []int{5, 4, 3, 2, 1})
+		}
+	})
+
+	t.Run("test Sort", func(t *testing.T) {
+		type person struct {
+			name string
+			age  int
+		}
+		a := []person{
+			{"John", 30},
+			{"Doe", 25},
+			{"Jane", 20},
+		}
+
+		b := array.NewArray(a).Sort(func(i, j int) bool { return a[i].age < a[j].age }).Value()
+
+		if !reflect.DeepEqual(b, []person{
+			{"Jane", 20},
+			{"Doe", 25},
+			{"John", 30},
+		}) {
+			t.Error("Sort failed. Got", b, "Expected", []person{
+				{"Jane", 20},
+				{"Doe", 25},
+				{"John", 30},
+			})
+		}
+	})
 }

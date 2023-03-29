@@ -240,6 +240,32 @@ func TestSort(t *testing.T) {
 	}
 }
 
+//test sort with struct
+func TestSortWithStruct(t *testing.T) {
+	type person struct {
+		name string
+		age  int
+	}
+	a := []person{
+		{"John", 30},
+		{"Doe", 25},
+		{"Jane", 20},
+	}
+	b := array.Sort(a, func(i, j int) bool { return a[i].age < a[j].age })
+
+	if !reflect.DeepEqual(b, []person{
+		{"Jane", 20},
+		{"Doe", 25},
+		{"John", 30},
+	}) {
+		t.Error("Sort failed. Got", b, "Expected", []person{
+			{"Jane", 20},
+			{"Doe", 25},
+			{"John", 30},
+		})
+	}
+}
+
 //test Unshift
 
 func TestUnshift(t *testing.T) {
