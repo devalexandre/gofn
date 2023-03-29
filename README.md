@@ -1,9 +1,9 @@
 # gofn
 ![Coverage](https://img.shields.io/badge/Coverage-84.4%25-brightgreen)
-library to use golang functional
-
 [![Go](https://github.com/devalexandre/gofn/actions/workflows/go.yml/badge.svg)](https://github.com/devalexandre/gofn/actions/workflows/go.yml)
-[![Go Coverage](https://github.com/devalexandre/gofn/wiki/coverage.svg)](https://raw.githack.com/wiki/devalexandre/gofnwiki/coverage.html)
+
+# library to use golang functional
+
 # Summary
 
 - [Array](#array)
