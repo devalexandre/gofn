@@ -18,7 +18,6 @@ type Number interface {
  *   b := Filter(a, func(x int) bool { return x%2 == 0 })
  *   fmt.Println(b) // [2 4]
  */
-
 func Filter[T any](a []T, f func(T) bool) []T {
 	var b []T
 	for _, x := range a {
@@ -322,10 +321,10 @@ func Fill[T any](a []T, start, end int, x T) []T {
 *   fmt.Println(b) // 1+2+3+4+5
  */
 
-func Join[T fmt.Stringer](a []T, sep string) string {
+func Join[T any](a []T, sep string) string {
 	b := make([]string, len(a))
 	for i, x := range a {
-		b[i] = x.String()
+		b[i] = fmt.Sprint(x)
 	}
 	return strings.Join(b, sep)
 }

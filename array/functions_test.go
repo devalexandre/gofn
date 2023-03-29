@@ -160,23 +160,92 @@ func TestContains(t *testing.T) {
 	}
 }
 
-/* Chain
-* Example:
-*   a := []int{1, 2, 3, 4, 5}
-*   b := Array(a).Reverse().Shuffle().Value()
-*   fmt.Println(b) // [5 4 3 2 1]
-
- */
-
-//test chain
-func TestChain(t *testing.T) {
-	a := []int{1, 2, 3, 4, 5}
-
-	arrayData := array.NewArray(a)
-
-	b := arrayData.Reverse().Value()
-	if !reflect.DeepEqual(b, []int{5, 4, 3, 2, 1}) {
-		t.Error("Chain failed. Got", b, "Expected", []int{5, 4, 3, 2, 1})
+//test array.Unique
+func TestUnique(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}
+	b := array.Unique(a)
+	if !reflect.DeepEqual(b, []int{1, 2, 3, 4, 5}) {
+		t.Error("Unique failed. Got", b, "Expected", []int{1, 2, 3, 4, 5})
 	}
+}
 
+//test array.Union
+func TestUnion(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := []int{6, 7, 8, 9, 10}
+	c := array.Union(a, b)
+	if !reflect.DeepEqual(c, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) {
+		t.Error("Union failed. Got", c, "Expected", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
+	}
+}
+
+//test array.Fill
+func TestFill(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := array.Fill(a, 0, 2, 10)
+	if !reflect.DeepEqual(b, []int{1, 2, 10, 10, 10}) {
+		t.Error("Fill failed. Got", b, "Expected", []int{1, 2, 10, 10, 10})
+	}
+}
+
+//test array.Join
+func TestJoin(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := array.Join(a, "+")
+	if b != "1+2+3+4+5" {
+		t.Error("Join failed. Got", b, "Expected", "1+2+3+4+5")
+	}
+}
+
+// test Pop
+func TestPop(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	removed, newArray := array.Pop(a)
+	if removed != 5 {
+		t.Error("Pop failed. Got", removed, "Expected", 5)
+	}
+	if !reflect.DeepEqual(newArray, []int{1, 2, 3, 4}) {
+		t.Error("Pop failed. Got", newArray, "Expected", []int{1, 2, 3, 4})
+	}
+}
+
+//test Push
+func TestPush(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := array.Push(a, 6)
+	if !reflect.DeepEqual(b, []int{1, 2, 3, 4, 5, 6}) {
+		t.Error("Push failed. Got", b, "Expected", []int{1, 2, 3, 4, 5, 6})
+	}
+}
+
+//test Shift
+func TestShift(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	removed, newArray := array.Shift(a)
+	if removed != 1 {
+		t.Error("Shift failed. Got", removed, "Expected", 1)
+	}
+	if !reflect.DeepEqual(newArray, []int{2, 3, 4, 5}) {
+		t.Error("Shift failed. Got", newArray, "Expected", []int{2, 3, 4, 5})
+	}
+}
+
+// test Sort
+func TestSort(t *testing.T) {
+	a := []int{3, 2, 1, 5, 4}
+	b := array.Sort(a, func(i, j int) bool { return a[i] < a[j] })
+
+	if !reflect.DeepEqual(b, []int{1, 2, 3, 4, 5}) {
+		t.Error("Sort failed. Got", b, "Expected", []int{1, 2, 3, 4, 5})
+	}
+}
+
+//test Unshift
+
+func TestUnshift(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := array.Unshift(a, 0)
+	if !reflect.DeepEqual(b, []int{0, 1, 2, 3, 4, 5}) {
+		t.Error("Unshift failed. Got", b, "Expected", []int{0, 1, 2, 3, 4, 5})
+	}
 }
