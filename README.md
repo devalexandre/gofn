@@ -1,6 +1,24 @@
 # gofn
 library to use golang functional
 
+# Summary
+
+- [Array](#array)
+    - [Usage](#usage)
+        - [array.Filter](#arrayfilter)
+        - [array.Find](#arrayfind)
+        - [array.Map](#arraymap)
+        - [array.FlatMap](#arrayflatmap)
+        - [array.Reduce](#arrayreduce)
+        - [array.Any](#arrayany)
+        - [array.Some](#arraysome)
+        - [array.Every](#arrayevery)
+        - [array.Sum](#arraysum)
+        - [array.Max](#arraymax)
+        - [array.Min](#arraymin)
+        - [array.Product](#arrayproduct)
+        - [array.Reverse](#arrayreverse)
+    - [Use two functions](#use-two-functions)
 
 ## Usage
 
