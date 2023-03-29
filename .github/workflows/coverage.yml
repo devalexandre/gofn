@@ -8,8 +8,7 @@ on:
 
 jobs:
   test:
-    # use ubuntu 18.04
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     name: Update coverage badge
     steps:
     - name: Test
