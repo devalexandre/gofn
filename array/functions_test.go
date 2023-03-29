@@ -159,3 +159,24 @@ func TestContains(t *testing.T) {
 		t.Error("Contains failed. Got", b, "Expected", true)
 	}
 }
+
+/* Chain
+* Example:
+*   a := []int{1, 2, 3, 4, 5}
+*   b := Array(a).Reverse().Shuffle().Value()
+*   fmt.Println(b) // [5 4 3 2 1]
+
+ */
+
+//test chain
+func TestChain(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+
+	arrayData := array.NewArray(a)
+
+	b := arrayData.Reverse().Value()
+	if !reflect.DeepEqual(b, []int{5, 4, 3, 2, 1}) {
+		t.Error("Chain failed. Got", b, "Expected", []int{5, 4, 3, 2, 1})
+	}
+
+}
