@@ -1,6 +1,8 @@
 # gofn
 library to use golang functional
 
+[![Go](https://github.com/devalexandre/gofn/actions/workflows/go.yml/badge.svg)](https://github.com/devalexandre/gofn/actions/workflows/go.yml)
+
 # Summary
 
 - [Array](#array)
