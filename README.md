@@ -2,7 +2,7 @@
 library to use golang functional
 
 [![Go](https://github.com/devalexandre/gofn/actions/workflows/go.yml/badge.svg)](https://github.com/devalexandre/gofn/actions/workflows/go.yml)
-
+[![Go Coverage](https://github.com/devalexandre/gofn/wiki/coverage.svg)](https://raw.githack.com/wiki/devalexandre/gofnwiki/coverage.html)
 # Summary
 
 - [Array](#array)
