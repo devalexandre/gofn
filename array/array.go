@@ -21,6 +21,15 @@ func Filter[T any](a []T, f func(T) bool) []T {
 	return b
 }
 
+func Find[T any](a *[]T, f func(T) bool) *T {
+	for _, x := range *a {
+		if f(x) {
+			return &x
+		}
+	}
+	return nil
+}
+
 /* Map
 * Example:
 *   a := []int{1, 2, 3, 4, 5}

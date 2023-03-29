@@ -15,6 +15,15 @@ func TestFilter(t *testing.T) {
 	}
 }
 
+//test array.Find
+func TestFind(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := array.Find(&a, func(x int) bool { return x%2 == 0 })
+	if *b != 2 {
+		t.Error("Find failed. Got", *b, "Expected", 2)
+	}
+}
+
 //test array.Map
 func TestMap(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
