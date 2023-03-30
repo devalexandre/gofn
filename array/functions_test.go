@@ -184,7 +184,7 @@ func TestFill(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Fill(a, 0, 2, 10)
 	if !reflect.DeepEqual(b, []int{10, 10, 3, 4, 5}) {
-		t.Error("Fill failed. Got", b, "Expected", []int{1, 2, 10, 10, 10})
+		t.Error("Fill failed. Got", b, "Expected", []int{10, 10, 3, 4, 5})
 	}
 }
 
@@ -273,5 +273,14 @@ func TestUnshift(t *testing.T) {
 	b := array.Unshift(a, 0)
 	if !reflect.DeepEqual(b, []int{0, 1, 2, 3, 4, 5}) {
 		t.Error("Unshift failed. Got", b, "Expected", []int{0, 1, 2, 3, 4, 5})
+	}
+}
+
+// test Shuffle
+func TestShuffle(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := array.Shuffle(a)
+	if reflect.DeepEqual(a, b) {
+		t.Error("Shuffle failed. Got", b, "Expected", []int{1, 2, 3, 4, 5})
 	}
 }
