@@ -64,15 +64,6 @@ func (a *Array[T]) Shuffle() *Array[T] {
 	return &Array[T]{value: Shuffle(a.value)}
 }
 
-func (a *Array[T]) Sort(f func(T, T) bool) *Array[T] {
-
-	for i := 0; i < len(a.value)-1; i++ {
-		for j := i + 1; j < len(a.value); j++ {
-			if f(a.value[i], a.value[j]) {
-				a.value[i], a.value[j] = a.value[j], a.value[i]
-			}
-		}
-	}
-
-	return a
+func (a *Array[T]) Sort(f func(i, j int) bool) *Array[T] {
+	return &Array[T]{value: Sort(a.value, f)}
 }
