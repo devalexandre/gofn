@@ -386,7 +386,29 @@ func Unshift[T any](a []T, x ...T) []T {
 	return append(x, a...)
 }
 
-// group w rows by key
+/* group w rows by key
+* Example:
+* type Itens struct {
+* 		Name        string
+* 		Price       float64
+* 		Description string
+* 		Qty         int
+* 	}
+*
+* 	itens := []Itens{
+* 		{"Item 1", 10.0, "Description 1", 1},
+* 		{"Item 2", 20.0, "Description 2", 2},
+* 		{"Item 3", 30.0, "Description 3", 3},
+*  		{"Item 4", 40.0, "Description 4", 10},
+*		{"Item 4", 40.0, "Description 4", 15},
+*		{"Item 4", 40.0, "Description 4", 25},
+*	}
+*
+*	grouped := array.GroupBy(itens, func(item Itens) string {
+*		return fmt.Sprintf("%s - %v", item.Name, item.Price)
+*	})
+ */
+
 func GroupBy[T any, K comparable](w []T, key func(T) K) map[K][]T {
 	m := make(map[K][]T)
 	for _, x := range w {
