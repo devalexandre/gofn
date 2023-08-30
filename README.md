@@ -30,6 +30,7 @@
         - [array.Push](#arraypush)
         - [array.Shift](#arrayshift)
         - [array.Sort](#arraysort)
+        - [array.GroupBy](#arraygroupby)
     - [chaining functions](#chaining-functions)
 
 
@@ -354,7 +355,30 @@ b := array.Sort(a, func(i, j int) bool { return a[i] < a[j] })
 fmt.Println(b) // [1 2 3 4 5]
 
 ```
+## array.GroupBy
+```go
+type Itens struct {
+		Name        string
+		Price       float64
+		Description string
+		Qty         int
+	}
 
+	itens := []Itens{
+		{"Item 1", 10.0, "Description 1", 1},
+		{"Item 2", 20.0, "Description 2", 2},
+		{"Item 3", 30.0, "Description 3", 3},
+		{"Item 4", 40.0, "Description 4", 10},
+		{"Item 4", 40.0, "Description 4", 15},
+		{"Item 4", 40.0, "Description 4", 25},
+	}
+
+	grouped := array.GroupBy(itens, func(item Itens) string {
+		return fmt.Sprintf("%s - %v", item.Name, item.Price)
+	})
+	fmt.Println(len(grouped)) // 4
+	
+```
 ## chaining functions
 
 You can chain the functions together.
