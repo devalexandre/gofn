@@ -355,7 +355,7 @@ b := array.Sort(a, func(i, j int) bool { return a[i] < a[j] })
 fmt.Println(b) // [1 2 3 4 5]
 
 ```
-## array.GroupBy
+### array.GroupBy
 ```go
 type Itens struct {
 		Name        string
