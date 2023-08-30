@@ -385,3 +385,14 @@ func Sort[T any](a []T, less func(i, j int) bool) []T {
 func Unshift[T any](a []T, x ...T) []T {
 	return append(x, a...)
 }
+
+// group w rows by key
+func GroupBy[T any, K comparable](w []T, key func(T) K) map[K][]T {
+	m := make(map[K][]T)
+	for _, x := range w {
+		if _, ok := m[key(x)]; !ok {
+			m[key(x)] = make([]T, 0)
+		}
+	}
+	return m
+}

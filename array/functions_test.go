@@ -1,6 +1,7 @@
 package array_test
 
 import (
+	"fmt"
 	"github.com/devalexandre/gofn/array"
 	"reflect"
 	"testing"
@@ -282,5 +283,33 @@ func TestShuffle(t *testing.T) {
 	b := array.Shuffle(a)
 	if reflect.DeepEqual(a, b) {
 		t.Error("Shuffle failed. Got", b, "Expected", []int{1, 2, 3, 4, 5})
+	}
+}
+
+//GroupBy
+func TestGroupBy(t *testing.T) {
+
+	type Itens struct {
+		Name        string
+		Price       float64
+		Description string
+		Qty         int
+	}
+
+	itens := []Itens{
+		{"Item 1", 10.0, "Description 1", 1},
+		{"Item 2", 20.0, "Description 2", 2},
+		{"Item 3", 30.0, "Description 3", 3},
+		{"Item 4", 40.0, "Description 4", 10},
+		{"Item 4", 40.0, "Description 4", 15},
+		{"Item 4", 40.0, "Description 4", 25},
+	}
+
+	grouped := array.GroupBy(itens, func(item Itens) string {
+		return fmt.Sprintf("%s - %v", item.Name, item.Price)
+	})
+
+	if len(grouped) != 4 {
+		t.Error("GroupBy failed. Got", len(grouped), "Expected", 4)
 	}
 }
