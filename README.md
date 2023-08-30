@@ -1,5 +1,5 @@
 # gofn
-![Coverage](https://img.shields.io/badge/Coverage-90.5%25-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-90.9%25-brightgreen)
 [![Go](https://github.com/devalexandre/gofn/actions/workflows/go.yml/badge.svg)](https://github.com/devalexandre/gofn/actions/workflows/go.yml)
 
 # library to use golang functional
