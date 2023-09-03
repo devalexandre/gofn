@@ -17,8 +17,8 @@ func TestArray(t *testing.T) {
 
 	t.Run("test Find", func(t *testing.T) {
 		a := []int{1, 2, 3, 4, 5}
-		b := array.NewArray(a).Find(func(x int) bool { return x%2 == 0 })
-		if *b != 2 {
+		b, _ := array.NewArray(a).Find(func(x int) bool { return x%2 == 0 })
+		if b != 2 {
 			t.Error("Find failed. Got", b, "Expected", 2)
 		}
 	})

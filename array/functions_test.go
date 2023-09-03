@@ -14,14 +14,34 @@ func TestFilter(t *testing.T) {
 	if !reflect.DeepEqual(b, []int{2, 4}) {
 		t.Error("Filter failed. Got", b, "Expected", []int{2, 4})
 	}
+
+	if len(a) == len(b) {
+		t.Error("Filter failed. Got", len(a), "Expected", len(b))
+	}
+
+	fmt.Println(a)
+}
+
+func TestFilter0Loc(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := array.Filter0Loc(a, func(x int) bool { return x%2 == 0 })
+	if !reflect.DeepEqual(b, []int{2, 4}) {
+		t.Error("Filter failed. Got", b, "Expected", []int{2, 4})
+	}
+
+	if len(a) == len(b) {
+		t.Error("Filter failed. Got", len(a), "Expected", len(b))
+	}
+
+	fmt.Println(a)
 }
 
 //test array.Find
 func TestFind(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
-	b := array.Find(&a, func(x int) bool { return x%2 == 0 })
-	if *b != 2 {
-		t.Error("Find failed. Got", *b, "Expected", 2)
+	b, _ := array.Find(a, func(x int) bool { return x%2 == 0 })
+	if b != 2 {
+		t.Error("Find failed. Got", b, "Expected", 2)
 	}
 }
 
