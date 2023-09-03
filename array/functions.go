@@ -18,23 +18,39 @@ type Number interface {
  *   b := Filter(a, func(x int) bool { return x%2 == 0 })
  *   fmt.Println(b) // [2 4]
  */
+
 func Filter[T any](a []T, f func(T) bool) []T {
-	var b []T
+	y := make([]T, len(a))
+	i := 0
 	for _, x := range a {
 		if f(x) {
-			b = append(b, x)
+			y[i] = x
+			i++
 		}
 	}
-	return b
+	return y[:i]
 }
 
-func Find[T any](a *[]T, f func(T) bool) *T {
-	for _, x := range *a {
+//with side effects
+func Filter0Loc[T any](a []T, f func(T) bool) []T {
+	i := 0
+	for _, x := range a {
 		if f(x) {
-			return &x
+			a[i] = x
+			i++
 		}
 	}
-	return nil
+	return a[:i]
+}
+
+func Find[T any](a []T, f func(T) bool) (T, bool) {
+	for _, x := range a {
+		if f(x) {
+			return x, true
+		}
+	}
+	var zero T
+	return zero, false
 }
 
 /* Map
@@ -45,11 +61,19 @@ func Find[T any](a *[]T, f func(T) bool) *T {
  */
 
 func Map[T, U any](a []T, f func(T) U) []U {
-	var b []U
-	for _, x := range a {
-		b = append(b, f(x))
+	var b = make([]U, len(a))
+	for i := 0; i < len(a); i++ {
+		b[i] = f(a[i])
 	}
+
 	return b
+}
+
+//with side effects
+func Map0Loc[T any](a []T, f func(T) T) {
+	for i, x := range a {
+		a[i] = f(x)
+	}
 }
 
 /* FlatMap
@@ -416,5 +440,6 @@ func GroupBy[T any, K comparable](w []T, key func(T) K) map[K][]T {
 			m[key(x)] = make([]T, 0)
 		}
 	}
+
 	return m
 }

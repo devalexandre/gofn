@@ -28,8 +28,8 @@ func (a *Array[T]) Filter(f func(T) bool) *Array[T] {
 	return &Array[T]{value: Filter(a.value, f)}
 }
 
-func (a *Array[T]) Find(f func(T) bool) *T {
-	return Find(&a.value, f)
+func (a *Array[T]) Find(f func(T) bool) (T, bool) {
+	return Find(a.value, f)
 }
 
 func (a *Array[T]) Map(f func(T) T) *Array[T] {
