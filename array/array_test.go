@@ -95,6 +95,15 @@ func TestArray(t *testing.T) {
 		}
 	})
 
+	//Shuffle
+	t.Run("test Shuffle", func(t *testing.T) {
+		a := array.Array[int]{1, 2, 3, 4, 5}
+		b := a.Shuffle()
+		if reflect.DeepEqual(b, array.Array[int]{1, 2, 3, 4, 5}) {
+			t.Error("Shuffle failed. Got", b, "Expected", array.Array[int]{5, 4, 3, 2, 1})
+		}
+	})
+
 	t.Run("test Sort", func(t *testing.T) {
 		type person struct {
 			name string

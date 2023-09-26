@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"sort"
 	"strings"
+	"time"
 )
 
 type Number interface {
@@ -278,9 +279,11 @@ func Reverse[T any](a []T) []T {
 *   fmt.Println(b) // [2 5 4 3 1]
  */
 func Shuffle[T any](a []T) []T {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	b := make([]T, len(a))
-	for i, x := range rand.Perm(len(a)) {
-		b[x] = a[i]
+	perm := r.Perm(len(a))
+	for i, j := range perm {
+		b[i] = a[j]
 	}
 	return b
 }

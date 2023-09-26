@@ -38,11 +38,22 @@ func TestFilter0Loc(t *testing.T) {
 
 // test array.Find
 func TestFind(t *testing.T) {
-	a := []int{1, 2, 3, 4, 5}
-	b := array.Find(a, func(x int) bool { return x%2 == 0 })
-	if b != 2 {
-		t.Error("Find failed. Got", b, "Expected", 2)
-	}
+
+	t.Run("test Find", func(t *testing.T) {
+		a := []int{1, 2, 3, 4, 5}
+		b := array.Find(a, func(x int) bool { return x%2 == 0 })
+		if b != 2 {
+			t.Error("Find failed. Got", b, "Expected", 2)
+		}
+	})
+
+	t.Run("test Find not found", func(t *testing.T) {
+		a := []int{1, 2, 3, 4, 5}
+		b := array.Find(a, func(x int) bool { return x > 6 })
+		if b != 0 {
+			t.Error("Find failed. Got", b, "Expected", 2)
+		}
+	})
 }
 
 // test array.Map
@@ -51,6 +62,14 @@ func TestMap(t *testing.T) {
 	b := array.Map(a, func(x int) int { return x * 2 })
 	if !reflect.DeepEqual(b, []int{2, 4, 6, 8, 10}) {
 		t.Error("Map failed. Got", b, "Expected", []int{2, 4, 6, 8, 10})
+	}
+}
+
+func TestMap0Loc(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	array.Map0Loc(a, func(x int) int { return x * 2 })
+	if !reflect.DeepEqual(a, []int{2, 4, 6, 8, 10}) {
+		t.Error("Map failed. Got", a, "Expected", []int{2, 4, 6, 8, 10})
 	}
 }
 
