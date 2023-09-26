@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-//test array.Filter
+// test array.Filter
 func TestFilter(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Filter(a, func(x int) bool { return x%2 == 0 })
@@ -36,16 +36,16 @@ func TestFilter0Loc(t *testing.T) {
 	fmt.Println(a)
 }
 
-//test array.Find
+// test array.Find
 func TestFind(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
-	b, _ := array.Find(a, func(x int) bool { return x%2 == 0 })
+	b := array.Find(a, func(x int) bool { return x%2 == 0 })
 	if b != 2 {
 		t.Error("Find failed. Got", b, "Expected", 2)
 	}
 }
 
-//test array.Map
+// test array.Map
 func TestMap(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Map(a, func(x int) int { return x * 2 })
@@ -54,7 +54,7 @@ func TestMap(t *testing.T) {
 	}
 }
 
-//test array.Reduce
+// test array.Reduce
 func TestReduce(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Reduce(a, func(x, y int) int { return x + y })
@@ -63,7 +63,7 @@ func TestReduce(t *testing.T) {
 	}
 }
 
-//test array.Some
+// test array.Some
 func TestSome(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Some(a, func(x int) bool { return x%2 == 0 })
@@ -72,7 +72,7 @@ func TestSome(t *testing.T) {
 	}
 }
 
-//test array.Every
+// test array.Every
 func TestEvery(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Every(a, func(x int) bool { return x%2 == 0 })
@@ -81,7 +81,7 @@ func TestEvery(t *testing.T) {
 	}
 }
 
-//test array.Any
+// test array.Any
 func TestAny(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Any(a, func(x int) bool { return x%2 == 0 })
@@ -90,7 +90,7 @@ func TestAny(t *testing.T) {
 	}
 }
 
-//test array.FlatMap
+// test array.FlatMap
 func TestFlatMap(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.FlatMap(a, func(x int) []int { return []int{x, x * 2} })
@@ -99,7 +99,7 @@ func TestFlatMap(t *testing.T) {
 	}
 }
 
-//test array.ForEach
+// test array.ForEach
 func TestForEach(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	array.ForEach(a, func(x int) { x = x * 2 })
@@ -108,7 +108,7 @@ func TestForEach(t *testing.T) {
 	}
 }
 
-//test array.IndexOf
+// test array.IndexOf
 func TestIndexOf(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.IndexOf(a, 3)
@@ -117,7 +117,7 @@ func TestIndexOf(t *testing.T) {
 	}
 }
 
-//test array.Sum
+// test array.Sum
 func TestSum(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Sum(a)
@@ -126,7 +126,7 @@ func TestSum(t *testing.T) {
 	}
 }
 
-//test array.Max
+// test array.Max
 func TestMax(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Max(a)
@@ -135,7 +135,7 @@ func TestMax(t *testing.T) {
 	}
 }
 
-//test array.Min
+// test array.Min
 func TestMin(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Min(a)
@@ -144,7 +144,7 @@ func TestMin(t *testing.T) {
 	}
 }
 
-//test array.Reverse
+// test array.Reverse
 func TestReverse(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Reverse(a)
@@ -153,7 +153,7 @@ func TestReverse(t *testing.T) {
 	}
 }
 
-//test array.Product
+// test array.Product
 func TestProduct(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Product(a)
@@ -162,7 +162,7 @@ func TestProduct(t *testing.T) {
 	}
 }
 
-//test array.Equals
+// test array.Equals
 func TestEquals(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := []int{1, 2, 3, 4, 5}
@@ -172,7 +172,7 @@ func TestEquals(t *testing.T) {
 	}
 }
 
-//test array.Contains
+// test array.Contains
 func TestContains(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Contains(a, 3)
@@ -181,7 +181,7 @@ func TestContains(t *testing.T) {
 	}
 }
 
-//test array.Unique
+// test array.Unique
 func TestUnique(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}
 	b := array.Unique(a)
@@ -190,7 +190,7 @@ func TestUnique(t *testing.T) {
 	}
 }
 
-//test array.Union
+// test array.Union
 func TestUnion(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := []int{6, 7, 8, 9, 10}
@@ -200,7 +200,7 @@ func TestUnion(t *testing.T) {
 	}
 }
 
-//test array.Fill
+// test array.Fill
 func TestFill(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Fill(a, 0, 2, 10)
@@ -209,7 +209,7 @@ func TestFill(t *testing.T) {
 	}
 }
 
-//test array.Join
+// test array.Join
 func TestJoin(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Join(a, "+")
@@ -230,7 +230,7 @@ func TestPop(t *testing.T) {
 	}
 }
 
-//test Push
+// test Push
 func TestPush(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Push(a, 6)
@@ -239,7 +239,7 @@ func TestPush(t *testing.T) {
 	}
 }
 
-//test Shift
+// test Shift
 func TestShift(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	removed, newArray := array.Shift(a)
@@ -261,7 +261,7 @@ func TestSort(t *testing.T) {
 	}
 }
 
-//test sort with struct
+// test sort with struct
 func TestSortWithStruct(t *testing.T) {
 	type person struct {
 		name string
@@ -306,7 +306,7 @@ func TestShuffle(t *testing.T) {
 	}
 }
 
-//GroupBy
+// GroupBy
 func TestGroupBy(t *testing.T) {
 
 	type Itens struct {
