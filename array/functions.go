@@ -5,19 +5,12 @@ import (
 	"math/rand"
 	"sort"
 	"strings"
+	"time"
 )
 
 type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~float32 | ~float64
 }
-
-/*
- * Array functions
- * Example:
- *   a := []int{1, 2, 3, 4, 5}
- *   b := Filter(a, func(x int) bool { return x%2 == 0 })
- *   fmt.Println(b) // [2 4]
- */
 
 func Filter[T any](a []T, f func(T) bool) []T {
 	y := make([]T, len(a))
@@ -31,7 +24,7 @@ func Filter[T any](a []T, f func(T) bool) []T {
 	return y[:i]
 }
 
-//with side effects
+// with side effects
 func Filter0Loc[T any](a []T, f func(T) bool) []T {
 	i := 0
 	for _, x := range a {
@@ -43,14 +36,14 @@ func Filter0Loc[T any](a []T, f func(T) bool) []T {
 	return a[:i]
 }
 
-func Find[T any](a []T, f func(T) bool) (T, bool) {
+func Find[T any](a []T, f func(T) bool) T {
 	for _, x := range a {
 		if f(x) {
-			return x, true
+			return x
 		}
 	}
 	var zero T
-	return zero, false
+	return zero
 }
 
 /* Map
@@ -69,7 +62,7 @@ func Map[T, U any](a []T, f func(T) U) []U {
 	return b
 }
 
-//with side effects
+// with side effects
 func Map0Loc[T any](a []T, f func(T) T) {
 	for i, x := range a {
 		a[i] = f(x)
@@ -286,9 +279,11 @@ func Reverse[T any](a []T) []T {
 *   fmt.Println(b) // [2 5 4 3 1]
  */
 func Shuffle[T any](a []T) []T {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	b := make([]T, len(a))
-	for i, x := range rand.Perm(len(a)) {
-		b[x] = a[i]
+	perm := r.Perm(len(a))
+	for i, j := range perm {
+		b[i] = a[j]
 	}
 	return b
 }

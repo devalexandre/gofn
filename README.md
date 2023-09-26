@@ -384,17 +384,16 @@ type Itens struct {
 You can chain the functions together.
 
 ```go
+data := array.Array[int]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 
-data := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-
-  a := array.NewArray(data).
+  a := data.
     Filter(func(i int) bool {
       return i%2 == 0
     }).
     Map(func(i int) int {
       return i * 2
     }).
-    Value()
+
   
     fmt.Println(a) // [4 8 12 16 20]
 
