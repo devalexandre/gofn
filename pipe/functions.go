@@ -3,6 +3,7 @@ package pipe
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 	"time"
 
 	"github.com/devalexandre/gofn/array"
@@ -157,12 +158,19 @@ func Shift[T any]() func([]T) (T, []T, error) {
 }
 
 // Sort adapts the sort function for pipeline use.
-func Sort[T any](less func(i, j int) bool) func([]T) ([]T, error) {
+// Sort adapts the sort function for pipeline use, requiring a comparison function.
+func Sort[T any](less func(i, j T) bool) func([]T) ([]T, error) {
 	return func(a []T) ([]T, error) {
 		if len(a) == 0 {
 			return nil, fmt.Errorf("empty slice, cannot Sort")
 		}
-		return array.Sort(a, less), nil
+		b := make([]T, len(a))
+		copy(b, a)
+		// Ajusta a chamada para sort.Slice para usar uma função de comparação que opera sobre os elementos da slice.
+		sort.Slice(b, func(i, j int) bool {
+			return less(b[i], b[j])
+		})
+		return b, nil
 	}
 }
 

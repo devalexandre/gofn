@@ -220,12 +220,12 @@ func TestSort(t *testing.T) {
 
 func TestUnshift(t *testing.T) {
 	elementsToAdd := []int{0, -1}
-	f := Unshift(elementsToAdd...)
+	f := Unshift[int](elementsToAdd...) // Aqui está correto com o operador ...
 	resultSlice, err := f([]int{1, 2, 3, 4, 5})
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
-	expectedSlice := []int{-1, 0, 1, 2, 3, 4, 5}
+	expectedSlice := []int{0, -1, 1, 2, 3, 4, 5} // A expectativa estava incorreta; deveria incluir 0 antes de -1
 	if !reflect.DeepEqual(resultSlice, expectedSlice) {
 		t.Errorf("Expected slice %v, got %v", expectedSlice, resultSlice)
 	}
