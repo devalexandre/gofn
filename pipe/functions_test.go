@@ -207,7 +207,7 @@ func TestShift(t *testing.T) {
 
 func TestSort(t *testing.T) {
 	lessFunc := func(i, j int) bool { return i < j }
-	f := Sort[int](lessFunc) // Especificando explicitamente que T é int.
+	f := Sort[int](lessFunc) 
 	sortedSlice, err := f([]int{5, 3, 4, 1, 2})
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -220,12 +220,12 @@ func TestSort(t *testing.T) {
 
 func TestUnshift(t *testing.T) {
 	elementsToAdd := []int{0, -1}
-	f := Unshift[int](elementsToAdd...) // Aqui está correto com o operador ...
+	f := Unshift[int](elementsToAdd...) 
 	resultSlice, err := f([]int{1, 2, 3, 4, 5})
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
-	expectedSlice := []int{0, -1, 1, 2, 3, 4, 5} // A expectativa estava incorreta; deveria incluir 0 antes de -1
+	expectedSlice := []int{0, -1, 1, 2, 3, 4, 5} 
 	if !reflect.DeepEqual(resultSlice, expectedSlice) {
 		t.Errorf("Expected slice %v, got %v", expectedSlice, resultSlice)
 	}
@@ -257,10 +257,7 @@ func TestGroupByFunc(t *testing.T) {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
-	// Como o resultado é um slice de slices, a verificação exata de igualdade esperada é mais complicada.
-	// Você precisará ajustar essa parte com base na lógica específica desejada para verificar os grupos.
-	// Por exemplo, verificar a contagem de grupos e um ou mais elementos específicos.
-	expectedGroupCount := 4 // Esperado 4 grupos distintos baseados no nome e preço.
+	expectedGroupCount := 4
 	if len(groupedItems) != expectedGroupCount {
 		t.Errorf("Expected %d groups, got %d", expectedGroupCount, len(groupedItems))
 	}
