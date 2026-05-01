@@ -379,3 +379,151 @@ func TestGroupBy(t *testing.T) {
 		t.Error("GroupBy failed. Got", grouped[key], "Expected items in original order")
 	}
 }
+
+func TestGroupSumBy(t *testing.T) {
+	type Itens struct {
+		Name        string
+		Price       float64
+		Description string
+		Qty         int
+	}
+
+	itens := []Itens{
+		{"Item 1", 10.0, "Description 1", 1},
+		{"Item 2", 20.0, "Description 2", 2},
+		{"Item 3", 30.0, "Description 3", 3},
+		{"Item 4", 40.0, "Description 4", 10},
+		{"Item 4", 40.0, "Description 4", 15},
+		{"Item 4", 40.0, "Description 4", 25},
+	}
+
+	priceByName := array.GroupSumBy(itens,
+		func(item Itens) string { return item.Name },
+		func(item Itens) float64 { return item.Price },
+	)
+
+	if priceByName["Item 4"] != 120.0 {
+		t.Error("GroupSumBy failed. Got", priceByName["Item 4"], "Expected", 120.0)
+	}
+
+	qtyByName := array.GroupSumBy(itens,
+		func(item Itens) string { return item.Name },
+		func(item Itens) int { return item.Qty },
+	)
+
+	if qtyByName["Item 4"] != 50 {
+		t.Error("GroupSumBy failed. Got", qtyByName["Item 4"], "Expected", 50)
+	}
+}
+
+func TestRowHelpers(t *testing.T) {
+	type Summary struct {
+		TotalPrice float64
+		TotalQty   int
+	}
+	type Itens struct {
+		Name        string
+		Price       float64
+		Description string
+		Qty         int
+	}
+
+	itens := []Itens{
+		{"Item 1", 10.0, "Description 1", 1},
+		{"Item 2", 20.0, "Description 2", 2},
+		{"Item 3", 30.0, "Description 3", 3},
+		{"Item 4", 40.0, "Description 4", 10},
+		{"Item 4", 40.0, "Description 4", 15},
+		{"Item 4", 40.0, "Description 4", 25},
+	}
+
+	t.Run("GroupSumByWhere", func(t *testing.T) {
+		sum := array.GroupSumByWhere(itens,
+			func(item Itens) bool { return item.Qty > 3 },
+			func(item Itens) string { return item.Name },
+			func(item Itens) float64 { return item.Price },
+		)
+
+		if !reflect.DeepEqual(sum, map[string]float64{"Item 4": 120}) {
+			t.Error("GroupSumByWhere failed. Got", sum, "Expected", map[string]float64{"Item 4": 120})
+		}
+	})
+
+	t.Run("GroupCountBy", func(t *testing.T) {
+		count := array.GroupCountBy(itens, func(item Itens) string { return item.Name })
+		if count["Item 4"] != 3 {
+			t.Error("GroupCountBy failed. Got", count["Item 4"], "Expected", 3)
+		}
+	})
+
+	t.Run("GroupReduceBy", func(t *testing.T) {
+		summary := array.GroupReduceBy(itens,
+			func(item Itens) string { return item.Name },
+			func(acc Summary, item Itens) Summary {
+				acc.TotalPrice += item.Price
+				acc.TotalQty += item.Qty
+				return acc
+			},
+		)
+
+		if summary["Item 4"] != (Summary{TotalPrice: 120, TotalQty: 50}) {
+			t.Error("GroupReduceBy failed. Got", summary["Item 4"], "Expected", Summary{TotalPrice: 120, TotalQty: 50})
+		}
+	})
+
+	t.Run("GroupStatsBy", func(t *testing.T) {
+		stats := array.GroupStatsBy(itens,
+			func(item Itens) string { return item.Name },
+			func(item Itens) float64 { return item.Price },
+		)
+
+		expected := array.GroupStats[float64]{Count: 3, Sum: 120, Min: 40, Max: 40, Avg: 40}
+		if stats["Item 4"] != expected {
+			t.Error("GroupStatsBy failed. Got", stats["Item 4"], "Expected", expected)
+		}
+	})
+
+	t.Run("DistinctBy", func(t *testing.T) {
+		distinct := array.DistinctBy(itens, func(item Itens) string { return item.Name })
+		if len(distinct) != 4 || distinct[3].Qty != 10 {
+			t.Error("DistinctBy failed. Got", distinct, "Expected first item for each name")
+		}
+	})
+
+	t.Run("IndexBy", func(t *testing.T) {
+		indexed := array.IndexBy(itens, func(item Itens) string { return item.Name })
+		if indexed["Item 4"].Qty != 25 {
+			t.Error("IndexBy failed. Got", indexed["Item 4"], "Expected last item for duplicated key")
+		}
+	})
+
+	t.Run("Partition", func(t *testing.T) {
+		highQty, lowQty := array.Partition(itens, func(item Itens) bool { return item.Qty > 3 })
+		if len(highQty) != 3 || len(lowQty) != 3 {
+			t.Error("Partition failed. Got", len(highQty), len(lowQty), "Expected", 3, 3)
+		}
+	})
+
+	t.Run("SortBy", func(t *testing.T) {
+		sorted := array.SortBy(itens, func(item Itens) int { return item.Qty })
+		if sorted[0].Qty != 1 || sorted[len(sorted)-1].Qty != 25 {
+			t.Error("SortBy failed. Got", sorted, "Expected order by Qty")
+		}
+		if itens[0].Qty != 1 {
+			t.Error("SortBy mutated input. Got", itens, "Expected original input")
+		}
+	})
+
+	t.Run("TakeSkipChunk", func(t *testing.T) {
+		if got := array.Take(itens, 2); len(got) != 2 || got[1].Name != "Item 2" {
+			t.Error("Take failed. Got", got, "Expected first two items")
+		}
+		if got := array.Skip(itens, 3); len(got) != 3 || got[0].Qty != 10 {
+			t.Error("Skip failed. Got", got, "Expected last three items")
+		}
+		chunks := array.Chunk(itens, 2)
+		if len(chunks) != 3 || len(chunks[2]) != 2 || chunks[2][1].Qty != 25 {
+			t.Error("Chunk failed. Got", chunks, "Expected three chunks with two items")
+		}
+	})
+}

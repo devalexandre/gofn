@@ -1,5 +1,5 @@
 # gofn
-![Coverage](https://img.shields.io/badge/Coverage-87.7%25-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-88.7%25-brightgreen)
 [![Go](https://github.com/devalexandre/gofn/actions/workflows/go.yml/badge.svg)](https://github.com/devalexandre/gofn/actions/workflows/go.yml)
 
 # library to use golang functional
@@ -31,6 +31,16 @@
         - [array.Shift](#arrayshift)
         - [array.Sort](#arraysort)
         - [array.GroupBy](#arraygroupby)
+        - [array.GroupSumBy](#arraygroupsumby)
+        - [array.GroupSumByWhere](#arraygroupsumbywhere)
+        - [array.GroupCountBy](#arraygroupcountby)
+        - [array.GroupReduceBy](#arraygroupreduceby)
+        - [array.GroupStatsBy](#arraygroupstatsby)
+        - [array.DistinctBy](#arraydistinctby)
+        - [array.IndexBy](#arrayindexby)
+        - [array.Partition](#arraypartition)
+        - [array.SortBy](#arraysortby)
+        - [array.Take, array.Skip, array.Chunk](#arraytake-arrayskip-arraychunk)
     - [chaining functions](#chaining-functions)
 
 
@@ -379,6 +389,160 @@ type Itens struct {
 	fmt.Println(len(grouped)) // 4
 	
 ```
+
+### array.GroupSumBy
+Group items by a key and sum a numeric value for each group.
+
+```go
+type Itens struct {
+	Name        string
+	Price       float64
+	Description string
+	Qty         int
+}
+
+itens := []Itens{
+	{"Item 1", 10.0, "Description 1", 1},
+	{"Item 2", 20.0, "Description 2", 2},
+	{"Item 3", 30.0, "Description 3", 3},
+	{"Item 4", 40.0, "Description 4", 10},
+	{"Item 4", 40.0, "Description 4", 15},
+	{"Item 4", 40.0, "Description 4", 25},
+}
+
+priceByName := array.GroupSumBy(itens,
+	func(item Itens) string { return item.Name },
+	func(item Itens) float64 { return item.Price },
+)
+
+qtyByName := array.GroupSumBy(itens,
+	func(item Itens) string { return item.Name },
+	func(item Itens) int { return item.Qty },
+)
+
+fmt.Println(priceByName["Item 4"]) // 120
+fmt.Println(qtyByName["Item 4"])   // 50
+```
+
+### array.GroupSumByWhere
+Filter, group and sum in one pass.
+
+```go
+priceByName := array.GroupSumByWhere(itens,
+	func(item Itens) bool { return item.Qty > 3 },
+	func(item Itens) string { return item.Name },
+	func(item Itens) float64 { return item.Price },
+)
+
+fmt.Println(priceByName["Item 4"]) // 120
+```
+
+### array.GroupCountBy
+Count rows by a key.
+
+```go
+countByName := array.GroupCountBy(itens, func(item Itens) string {
+	return item.Name
+})
+
+fmt.Println(countByName["Item 4"]) // 3
+```
+
+### array.GroupReduceBy
+Build custom summaries by group.
+
+```go
+type Summary struct {
+	TotalPrice float64
+	TotalQty   int
+}
+
+summaryByName := array.GroupReduceBy(itens,
+	func(item Itens) string {
+		return item.Name
+	},
+	func(acc Summary, item Itens) Summary {
+		acc.TotalPrice += item.Price
+		acc.TotalQty += item.Qty
+		return acc
+	},
+)
+
+fmt.Println(summaryByName["Item 4"]) // {120 50}
+```
+
+### array.GroupStatsBy
+Calculate count, sum, min, max and average by group.
+
+```go
+statsByName := array.GroupStatsBy(itens,
+	func(item Itens) string { return item.Name },
+	func(item Itens) float64 { return item.Price },
+)
+
+fmt.Println(statsByName["Item 4"].Count) // 3
+fmt.Println(statsByName["Item 4"].Sum)   // 120
+fmt.Println(statsByName["Item 4"].Avg)   // 40
+```
+
+### array.DistinctBy
+Keep the first row for each key.
+
+```go
+uniqueByName := array.DistinctBy(itens, func(item Itens) string {
+	return item.Name
+})
+
+fmt.Println(len(uniqueByName)) // 4
+```
+
+### array.IndexBy
+Create a map by key. If a key repeats, the last row wins.
+
+```go
+itemByName := array.IndexBy(itens, func(item Itens) string {
+	return item.Name
+})
+
+fmt.Println(itemByName["Item 4"].Qty) // 25
+```
+
+### array.Partition
+Split rows into matched and unmatched slices.
+
+```go
+highQty, lowQty := array.Partition(itens, func(item Itens) bool {
+	return item.Qty > 3
+})
+
+fmt.Println(len(highQty)) // 3
+fmt.Println(len(lowQty))  // 3
+```
+
+### array.SortBy
+Sort rows by a selected field without mutating the original slice.
+
+```go
+byQty := array.SortBy(itens, func(item Itens) int {
+	return item.Qty
+})
+
+fmt.Println(byQty[0].Qty) // 1
+```
+
+### array.Take, array.Skip, array.Chunk
+Use these helpers for pagination and batch processing.
+
+```go
+firstPage := array.Take(itens, 2)
+nextRows := array.Skip(itens, 2)
+batches := array.Chunk(itens, 2)
+
+fmt.Println(len(firstPage)) // 2
+fmt.Println(len(nextRows))  // 4
+fmt.Println(len(batches))   // 3
+```
+
 ## chaining functions
 
 You can chain the functions together.
@@ -397,4 +561,61 @@ data := array.Array[int]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
   
     fmt.Println(a) // [4 8 12 16 20]
 
+```
+
+You can also group and sum values after filtering.
+
+```go
+type Itens struct {
+	Name        string
+	Price       float64
+	Description string
+	Qty         int
+}
+
+data := array.Array[Itens]{
+	{"Item 1", 10.0, "Description 1", 1},
+	{"Item 2", 20.0, "Description 2", 2},
+	{"Item 3", 30.0, "Description 3", 3},
+	{"Item 4", 40.0, "Description 4", 10},
+	{"Item 4", 40.0, "Description 4", 15},
+	{"Item 4", 40.0, "Description 4", 25},
+}
+
+priceByName := data.
+	Filter(func(item Itens) bool {
+		return item.Qty > 3
+	}).
+	GroupSumBy(
+		func(item Itens) string { return item.Name },
+		func(item Itens) float64 { return item.Price },
+	)
+
+fmt.Println(priceByName["Item 4"]) // 120
+```
+
+Some helpers are also available in chain form.
+
+```go
+countByName := data.GroupCountBy(func(item Itens) string {
+	return item.Name
+})
+
+statsByName := data.GroupStatsBy(
+	func(item Itens) string { return item.Name },
+	func(item Itens) float64 { return item.Price },
+)
+
+uniqueByName := data.DistinctBy(func(item Itens) string {
+	return item.Name
+})
+
+highQty, lowQty := data.Partition(func(item Itens) bool {
+	return item.Qty > 3
+})
+
+page := data.
+	SortByFloat64(func(item Itens) float64 { return item.Price }).
+	Skip(10).
+	Take(10)
 ```

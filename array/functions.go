@@ -1,6 +1,7 @@
 package array
 
 import (
+	"cmp"
 	"fmt"
 	"math/rand/v2"
 	"slices"
@@ -12,6 +13,14 @@ type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
 		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
 		~float32 | ~float64
+}
+
+type GroupStats[V Number] struct {
+	Count int
+	Sum   V
+	Min   V
+	Max   V
+	Avg   float64
 }
 
 func Filter[T any](a []T, f func(T) bool) []T {
@@ -450,4 +459,169 @@ func GroupBy[T any, K comparable](w []T, key func(T) K) map[K][]T {
 	}
 
 	return m
+}
+
+/* GroupSumBy groups rows by key and sums a numeric value for each group.
+* Example:
+*   totalByName := GroupSumBy(items,
+*       func(item Item) string { return item.Name },
+*       func(item Item) float64 { return item.Price },
+*   )
+ */
+func GroupSumBy[T any, K comparable, V Number](w []T, key func(T) K, value func(T) V) map[K]V {
+	m := make(map[K]V)
+	for _, x := range w {
+		m[key(x)] += value(x)
+	}
+
+	return m
+}
+
+func GroupSumByWhere[T any, K comparable, V Number](w []T, where func(T) bool, key func(T) K, value func(T) V) map[K]V {
+	m := make(map[K]V)
+	for _, x := range w {
+		if !where(x) {
+			continue
+		}
+		m[key(x)] += value(x)
+	}
+
+	return m
+}
+
+func GroupCountBy[T any, K comparable](w []T, key func(T) K) map[K]int {
+	m := make(map[K]int)
+	for _, x := range w {
+		m[key(x)]++
+	}
+
+	return m
+}
+
+func GroupReduceBy[T any, K comparable, A any](w []T, key func(T) K, reduce func(A, T) A) map[K]A {
+	m := make(map[K]A)
+	for _, x := range w {
+		k := key(x)
+		m[k] = reduce(m[k], x)
+	}
+
+	return m
+}
+
+func GroupStatsBy[T any, K comparable, V Number](w []T, key func(T) K, value func(T) V) map[K]GroupStats[V] {
+	m := make(map[K]GroupStats[V])
+	for _, x := range w {
+		k := key(x)
+		v := value(x)
+		stats, ok := m[k]
+		if !ok {
+			m[k] = GroupStats[V]{
+				Count: 1,
+				Sum:   v,
+				Min:   v,
+				Max:   v,
+				Avg:   float64(v),
+			}
+			continue
+		}
+
+		stats.Count++
+		stats.Sum += v
+		if v < stats.Min {
+			stats.Min = v
+		}
+		if v > stats.Max {
+			stats.Max = v
+		}
+		stats.Avg = float64(stats.Sum) / float64(stats.Count)
+		m[k] = stats
+	}
+
+	return m
+}
+
+func DistinctBy[T any, K comparable](w []T, key func(T) K) []T {
+	result := make([]T, 0, len(w))
+	seen := make(map[K]struct{}, len(w))
+	for _, x := range w {
+		k := key(x)
+		if _, ok := seen[k]; ok {
+			continue
+		}
+		seen[k] = struct{}{}
+		result = append(result, x)
+	}
+
+	return result
+}
+
+func IndexBy[T any, K comparable](w []T, key func(T) K) map[K]T {
+	m := make(map[K]T, len(w))
+	for _, x := range w {
+		m[key(x)] = x
+	}
+
+	return m
+}
+
+func Partition[T any](w []T, f func(T) bool) ([]T, []T) {
+	matched := make([]T, 0, len(w))
+	unmatched := make([]T, 0, len(w))
+	for _, x := range w {
+		if f(x) {
+			matched = append(matched, x)
+			continue
+		}
+		unmatched = append(unmatched, x)
+	}
+
+	return matched, unmatched
+}
+
+func SortBy[T any, K cmp.Ordered](w []T, key func(T) K) []T {
+	result := slices.Clone(w)
+	slices.SortStableFunc(result, func(a, b T) int {
+		return cmp.Compare(key(a), key(b))
+	})
+
+	return result
+}
+
+func Take[T any](w []T, n int) []T {
+	if n <= 0 {
+		return []T{}
+	}
+	if n > len(w) {
+		n = len(w)
+	}
+
+	return slices.Clone(w[:n])
+}
+
+func Skip[T any](w []T, n int) []T {
+	if n <= 0 {
+		return slices.Clone(w)
+	}
+	if n >= len(w) {
+		return []T{}
+	}
+
+	return slices.Clone(w[n:])
+}
+
+func Chunk[T any](w []T, size int) [][]T {
+	if size <= 0 {
+		panic("chunk size must be positive")
+	}
+
+	chunks := make([][]T, 0, (len(w)+size-1)/size)
+	for start := 0; start < len(w); start += size {
+		end := start + size
+		if end > len(w) {
+			end = len(w)
+		}
+		chunks = append(chunks, slices.Clone(w[start:end]))
+	}
+
+	return chunks
 }

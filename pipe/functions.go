@@ -1,6 +1,7 @@
 package pipe
 
 import (
+	"cmp"
 	"fmt"
 	"slices"
 
@@ -203,5 +204,93 @@ func GroupBy[T any, K comparable](f func(T) K) func([]T) ([]T, error) {
 			result = append(result, item)
 		}
 		return result, nil
+	}
+}
+
+func GroupSumBy[T any, K comparable, V Number](key func(T) K, value func(T) V) func([]T) (map[K]V, error) {
+	return func(a []T) (map[K]V, error) {
+		if len(a) == 0 {
+			return nil, fmt.Errorf("the input slice is empty")
+		}
+		return array.GroupSumBy(a, key, value), nil
+	}
+}
+
+func GroupSumByWhere[T any, K comparable, V Number](where func(T) bool, key func(T) K, value func(T) V) func([]T) (map[K]V, error) {
+	return func(a []T) (map[K]V, error) {
+		if len(a) == 0 {
+			return nil, fmt.Errorf("the input slice is empty")
+		}
+		return array.GroupSumByWhere(a, where, key, value), nil
+	}
+}
+
+func GroupCountBy[T any, K comparable](key func(T) K) func([]T) (map[K]int, error) {
+	return func(a []T) (map[K]int, error) {
+		if len(a) == 0 {
+			return nil, fmt.Errorf("the input slice is empty")
+		}
+		return array.GroupCountBy(a, key), nil
+	}
+}
+
+func GroupReduceBy[T any, K comparable, A any](key func(T) K, reduce func(A, T) A) func([]T) (map[K]A, error) {
+	return func(a []T) (map[K]A, error) {
+		if len(a) == 0 {
+			return nil, fmt.Errorf("the input slice is empty")
+		}
+		return array.GroupReduceBy(a, key, reduce), nil
+	}
+}
+
+func GroupStatsBy[T any, K comparable, V Number](key func(T) K, value func(T) V) func([]T) (map[K]array.GroupStats[V], error) {
+	return func(a []T) (map[K]array.GroupStats[V], error) {
+		if len(a) == 0 {
+			return nil, fmt.Errorf("the input slice is empty")
+		}
+		return array.GroupStatsBy(a, key, value), nil
+	}
+}
+
+func DistinctBy[T any, K comparable](key func(T) K) func([]T) ([]T, error) {
+	return func(a []T) ([]T, error) {
+		return array.DistinctBy(a, key), nil
+	}
+}
+
+func IndexBy[T any, K comparable](key func(T) K) func([]T) (map[K]T, error) {
+	return func(a []T) (map[K]T, error) {
+		return array.IndexBy(a, key), nil
+	}
+}
+
+func Partition[T any](f func(T) bool) func([]T) ([]T, []T, error) {
+	return func(a []T) ([]T, []T, error) {
+		matched, unmatched := array.Partition(a, f)
+		return matched, unmatched, nil
+	}
+}
+
+func SortBy[T any, K cmp.Ordered](key func(T) K) func([]T) ([]T, error) {
+	return func(a []T) ([]T, error) {
+		return array.SortBy(a, key), nil
+	}
+}
+
+func Take[T any](n int) func([]T) ([]T, error) {
+	return func(a []T) ([]T, error) {
+		return array.Take(a, n), nil
+	}
+}
+
+func Skip[T any](n int) func([]T) ([]T, error) {
+	return func(a []T) ([]T, error) {
+		return array.Skip(a, n), nil
+	}
+}
+
+func Chunk[T any](size int) func([]T) ([][]T, error) {
+	return func(a []T) ([][]T, error) {
+		return array.Chunk(a, size), nil
 	}
 }
