@@ -2,9 +2,11 @@ package array_test
 
 import (
 	"fmt"
-	"github.com/devalexandre/gofn/array"
 	"reflect"
+	"slices"
 	"testing"
+
+	"github.com/devalexandre/gofn/array"
 )
 
 func TestArray(t *testing.T) {
@@ -99,8 +101,16 @@ func TestArray(t *testing.T) {
 	t.Run("test Shuffle", func(t *testing.T) {
 		a := array.Array[int]{1, 2, 3, 4, 5}
 		b := a.Shuffle()
-		if reflect.DeepEqual(b, array.Array[int]{1, 2, 3, 4, 5}) {
-			t.Error("Shuffle failed. Got", b, "Expected", array.Array[int]{5, 4, 3, 2, 1})
+		if len(b) != len(a) {
+			t.Error("Shuffle failed. Got length", len(b), "Expected", len(a))
+		}
+		sorted := slices.Clone(b)
+		slices.Sort(sorted)
+		if !reflect.DeepEqual(sorted, a) {
+			t.Error("Shuffle failed. Got", b, "Expected same elements as", a)
+		}
+		if !reflect.DeepEqual(a, array.Array[int]{1, 2, 3, 4, 5}) {
+			t.Error("Shuffle mutated input. Got", a, "Expected", array.Array[int]{1, 2, 3, 4, 5})
 		}
 	})
 
@@ -150,6 +160,14 @@ func TestArray(t *testing.T) {
 
 		if len(grouped) != 4 {
 			t.Error("GroupBy failed. Got", len(grouped), "Expected", 4)
+		}
+
+		key := "Item 4 - 40"
+		if len(grouped[key]) != 3 {
+			t.Error("GroupBy failed. Got", grouped[key], "Expected 3 items")
+		}
+		if grouped[key][0].Qty != 10 || grouped[key][1].Qty != 15 || grouped[key][2].Qty != 25 {
+			t.Error("GroupBy failed. Got", grouped[key], "Expected items in original order")
 		}
 	})
 }

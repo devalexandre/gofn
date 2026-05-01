@@ -2,15 +2,15 @@ package pipe
 
 import (
 	"fmt"
-	"math/rand"
-	"sort"
-	"time"
+	"slices"
 
 	"github.com/devalexandre/gofn/array"
 )
 
 type Number interface {
-	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~float32 | ~float64
+	~int | ~int8 | ~int16 | ~int32 | ~int64 |
+		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
+		~float32 | ~float64
 }
 
 // Filter adapts the filter function for pipeline use.
@@ -58,7 +58,8 @@ func Product[T Number]() func([]T) (T, error) {
 func Min[T Number]() func([]T) (T, error) {
 	return func(a []T) (T, error) {
 		if len(a) == 0 {
-			return *new(T), fmt.Errorf("slice is empty, cannot determine Min")
+			var zero T
+			return zero, fmt.Errorf("slice is empty, cannot determine Min")
 		}
 		return array.Min(a), nil
 	}
@@ -67,7 +68,8 @@ func Min[T Number]() func([]T) (T, error) {
 func Max[T Number]() func([]T) (T, error) {
 	return func(a []T) (T, error) {
 		if len(a) == 0 {
-			return *new(T), fmt.Errorf("slice is empty, cannot determine Max")
+			var zero T
+			return zero, fmt.Errorf("slice is empty, cannot determine Max")
 		}
 		return array.Max(a), nil
 	}
@@ -90,7 +92,6 @@ func Reverse[T any]() func([]T) ([]T, error) {
 // Shuffle adapts the shuffle function for pipeline use.
 func Shuffle[T any]() func([]T) ([]T, error) {
 	return func(a []T) ([]T, error) {
-		rand.Seed(time.Now().UnixNano())
 		return array.Shuffle(a), nil
 	}
 }
@@ -166,9 +167,14 @@ func Sort[T any](less func(i, j T) bool) func([]T) ([]T, error) {
 		}
 		b := make([]T, len(a))
 		copy(b, a)
-		// Ajusta a chamada para sort.Slice para usar uma função de comparação que opera sobre os elementos da slice.
-		sort.Slice(b, func(i, j int) bool {
-			return less(b[i], b[j])
+		slices.SortFunc(b, func(i, j T) int {
+			if less(i, j) {
+				return -1
+			}
+			if less(j, i) {
+				return 1
+			}
+			return 0
 		})
 		return b, nil
 	}
@@ -186,14 +192,15 @@ func GroupBy[T any, K comparable](f func(T) K) func([]T) ([]T, error) {
 		if len(a) == 0 {
 			return nil, fmt.Errorf("the input slice is empty")
 		}
-		seen := make(map[K]bool)
-		var result []T
+		seen := make(map[K]struct{}, len(a))
+		result := make([]T, 0, len(a))
 		for _, item := range a {
 			key := f(item)
-			if !seen[key] {
-				seen[key] = true
-				result = append(result, item)
+			if _, ok := seen[key]; ok {
+				continue
 			}
+			seen[key] = struct{}{}
+			result = append(result, item)
 		}
 		return result, nil
 	}

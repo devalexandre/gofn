@@ -2,9 +2,11 @@ package array_test
 
 import (
 	"fmt"
-	"github.com/devalexandre/gofn/array"
 	"reflect"
+	"slices"
 	"testing"
+
+	"github.com/devalexandre/gofn/array"
 )
 
 // test array.Filter
@@ -219,6 +221,15 @@ func TestUnion(t *testing.T) {
 	}
 }
 
+func TestUnionAllowsNonComparableValues(t *testing.T) {
+	a := []map[string]int{{"a": 1}}
+	b := []map[string]int{{"b": 2}}
+	c := array.Union(a, b)
+	if len(c) != 2 || c[0]["a"] != 1 || c[1]["b"] != 2 {
+		t.Error("Union failed. Got", c, "Expected two map values")
+	}
+}
+
 // test array.Fill
 func TestFill(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
@@ -320,8 +331,16 @@ func TestUnshift(t *testing.T) {
 func TestShuffle(t *testing.T) {
 	a := []int{1, 2, 3, 4, 5}
 	b := array.Shuffle(a)
-	if reflect.DeepEqual(a, b) {
-		t.Error("Shuffle failed. Got", b, "Expected", []int{1, 2, 3, 4, 5})
+	if len(b) != len(a) {
+		t.Error("Shuffle failed. Got length", len(b), "Expected", len(a))
+	}
+	sorted := slices.Clone(b)
+	slices.Sort(sorted)
+	if !reflect.DeepEqual(sorted, a) {
+		t.Error("Shuffle failed. Got", b, "Expected same elements as", a)
+	}
+	if !reflect.DeepEqual(a, []int{1, 2, 3, 4, 5}) {
+		t.Error("Shuffle mutated input. Got", a, "Expected", []int{1, 2, 3, 4, 5})
 	}
 }
 
@@ -350,5 +369,13 @@ func TestGroupBy(t *testing.T) {
 
 	if len(grouped) != 4 {
 		t.Error("GroupBy failed. Got", len(grouped), "Expected", 4)
+	}
+
+	key := "Item 4 - 40"
+	if len(grouped[key]) != 3 {
+		t.Error("GroupBy failed. Got", grouped[key], "Expected 3 items")
+	}
+	if grouped[key][0].Qty != 10 || grouped[key][1].Qty != 15 || grouped[key][2].Qty != 25 {
+		t.Error("GroupBy failed. Got", grouped[key], "Expected items in original order")
 	}
 }

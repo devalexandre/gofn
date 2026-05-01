@@ -1,5 +1,5 @@
 # gofn
-![Coverage](https://img.shields.io/badge/Coverage-88.8%25-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-87.7%25-brightgreen)
 [![Go](https://github.com/devalexandre/gofn/actions/workflows/go.yml/badge.svg)](https://github.com/devalexandre/gofn/actions/workflows/go.yml)
 
 # library to use golang functional
@@ -284,7 +284,7 @@ Fill the array with a value.
 ```go
 
 a := []int{1, 2, 3, 4, 5}
-b := array.Fill(a, 0)
+b := array.Fill(a, 0, len(a), 0)
 
 fmt.Println(b) // [0 0 0 0 0]
 
@@ -392,7 +392,7 @@ data := array.Array[int]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
     }).
     Map(func(i int) int {
       return i * 2
-    }).
+    })
 
   
     fmt.Println(a) // [4 8 12 16 20]

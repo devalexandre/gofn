@@ -2,26 +2,26 @@ package array
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
+	"slices"
 	"sort"
 	"strings"
-	"time"
 )
 
 type Number interface {
-	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~float32 | ~float64
+	~int | ~int8 | ~int16 | ~int32 | ~int64 |
+		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
+		~float32 | ~float64
 }
 
 func Filter[T any](a []T, f func(T) bool) []T {
-	y := make([]T, len(a))
-	i := 0
+	y := make([]T, 0, len(a))
 	for _, x := range a {
 		if f(x) {
-			y[i] = x
-			i++
+			y = append(y, x)
 		}
 	}
-	return y[:i]
+	return y
 }
 
 // with side effects
@@ -54,9 +54,9 @@ func Find[T any](a []T, f func(T) bool) T {
  */
 
 func Map[T, U any](a []T, f func(T) U) []U {
-	var b = make([]U, len(a))
-	for i := 0; i < len(a); i++ {
-		b[i] = f(a[i])
+	b := make([]U, len(a))
+	for i, x := range a {
+		b[i] = f(x)
 	}
 
 	return b
@@ -126,12 +126,7 @@ func Any[T any](input []T, f func(T) bool) bool {
  */
 
 func Some[T any](a []T, f func(T) bool) bool {
-	for _, x := range a {
-		if f(x) {
-			return true
-		}
-	}
-	return false
+	return Any(a, f)
 }
 
 /* Every
@@ -157,7 +152,14 @@ func Every[T any](a []T, f func(T) bool) bool {
  */
 
 func Sum[T Number](a []T) T {
-	return Reduce(a, func(x, y T) T { return x + y })
+	if len(a) == 0 {
+		panic("empty array")
+	}
+	total := a[0]
+	for _, x := range a[1:] {
+		total += x
+	}
+	return total
 }
 
 /* Product array of numbers
@@ -167,7 +169,14 @@ func Sum[T Number](a []T) T {
 *   fmt.Println(b) // 120
  */
 func Product[T Number](a []T) T {
-	return Reduce(a, func(x, y T) T { return x * y })
+	if len(a) == 0 {
+		panic("empty array")
+	}
+	total := a[0]
+	for _, x := range a[1:] {
+		total *= x
+	}
+	return total
 }
 
 /* Min array of numbers
@@ -177,12 +186,17 @@ func Product[T Number](a []T) T {
 *   fmt.Println(b) // 1
  */
 func Min[T Number](a []T) T {
-	return Reduce(a, func(x, y T) T {
-		if x < y {
-			return x
+	if len(a) == 0 {
+		panic("empty array")
+	}
+	minimum := a[0]
+	for _, x := range a[1:] {
+		if minimum < x {
+			continue
 		}
-		return y
-	})
+		minimum = x
+	}
+	return minimum
 }
 
 /* Max array of numbers
@@ -193,12 +207,17 @@ func Min[T Number](a []T) T {
  */
 
 func Max[T Number](a []T) T {
-	return Reduce(a, func(x, y T) T {
-		if x > y {
-			return x
+	if len(a) == 0 {
+		panic("empty array")
+	}
+	maximum := a[0]
+	for _, x := range a[1:] {
+		if maximum > x {
+			continue
 		}
-		return y
-	})
+		maximum = x
+	}
+	return maximum
 }
 
 /* ForEach
@@ -219,12 +238,7 @@ func ForEach[T any](a []T, f func(T)) {
 *   fmt.Println(b) // 2
  */
 func IndexOf[T comparable](a []T, x T) int {
-	for i, y := range a {
-		if x == y {
-			return i
-		}
-	}
-	return -1
+	return slices.Index(a, x)
 }
 
 /* Contains
@@ -234,7 +248,7 @@ func IndexOf[T comparable](a []T, x T) int {
 *   fmt.Println(b) // true
  */
 func Contains[T comparable](a []T, x T) bool {
-	return IndexOf(a, x) != -1
+	return slices.Contains(a, x)
 }
 
 /* Equals
@@ -247,15 +261,7 @@ func Contains[T comparable](a []T, x T) bool {
  */
 
 func Equals[T comparable](a, b []T) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, x := range a {
-		if x != b[i] {
-			return false
-		}
-	}
-	return true
+	return slices.Equal(a, b)
 }
 
 /* Reverse
@@ -266,9 +272,8 @@ func Equals[T comparable](a, b []T) bool {
  */
 func Reverse[T any](a []T) []T {
 	b := make([]T, len(a))
-	for i, x := range a {
-		b[len(a)-1-i] = x
-	}
+	copy(b, a)
+	slices.Reverse(b)
 	return b
 }
 
@@ -279,12 +284,11 @@ func Reverse[T any](a []T) []T {
 *   fmt.Println(b) // [2 5 4 3 1]
  */
 func Shuffle[T any](a []T) []T {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	b := make([]T, len(a))
-	perm := r.Perm(len(a))
-	for i, j := range perm {
-		b[i] = a[j]
-	}
+	copy(b, a)
+	rand.Shuffle(len(b), func(i, j int) {
+		b[i], b[j] = b[j], b[i]
+	})
 	return b
 }
 
@@ -297,10 +301,13 @@ func Shuffle[T any](a []T) []T {
 
 func Unique[T comparable](a []T) []T {
 	b := make([]T, 0, len(a))
+	seen := make(map[T]struct{}, len(a))
 	for _, x := range a {
-		if !Contains(b, x) {
-			b = append(b, x)
+		if _, ok := seen[x]; ok {
+			continue
 		}
+		seen[x] = struct{}{}
+		b = append(b, x)
 	}
 	return b
 }
@@ -313,8 +320,15 @@ func Unique[T comparable](a []T) []T {
 *   fmt.Println(c) // [1 2 3 4 5 6 7 8 9 10]
  */
 
-func Union[T comparable](a, b []T) []T {
-	return append(a, b...)
+func Union[T any](a, b []T) []T {
+	if len(a)+len(b) == 0 {
+		return append(a, b...)
+	}
+
+	c := make([]T, 0, len(a)+len(b))
+	c = append(c, a...)
+	c = append(c, b...)
+	return c
 }
 
 /* Fill
@@ -431,9 +445,8 @@ func Unshift[T any](a []T, x ...T) []T {
 func GroupBy[T any, K comparable](w []T, key func(T) K) map[K][]T {
 	m := make(map[K][]T)
 	for _, x := range w {
-		if _, ok := m[key(x)]; !ok {
-			m[key(x)] = make([]T, 0)
-		}
+		k := key(x)
+		m[k] = append(m[k], x)
 	}
 
 	return m
